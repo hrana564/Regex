@@ -63,7 +63,38 @@
           float:left;
           margin-right:5px;
       }
+
+      /************************* Diff Checker Script **********/
+      .top {
+        text-align: center;
+      }
+      .textInput {
+        display: block;
+        width: 49%;
+        float: left;
+      }
+      textarea {
+        width:100%;
+        height:300px;
+      }
+      label:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .spacer {
+        margin-left: 10px;
+      }
+      .viewType {
+        font-size: 16px;
+        clear: both;
+        text-align: center;
+        padding: 1em;
+      }
+      #diffoutput {
+        width: 100%;
+      }
    </style>
+   <script type="text/javascript" src="./javascripts/diffChecker.js"></script>
  </head>
  <body>
 
@@ -72,6 +103,7 @@
     <button class="tablinks" onclick="openTab(event, 'Tester')">Regex Tester</button>
     <button class="tablinks" onclick="openTab(event, 'Extracter')">Regex Extract/Replace</button>
     <button class="tablinks" onclick="openTab(event, 'DuplicateRemoval')">Duplicate Removal/Sorter</button>
+    <button class="tablinks" onclick="openTab(event, 'DiffChecker')">Diff Checker</button>
   </div>
 
   <div id="Tester" class="tabcontent">
@@ -273,6 +305,82 @@
           <input name="copyClip" class="actbtn" id="copyClip" type="button" value="Copy to Clipboard" data-clipboard-target="#newCode">
         </p>
       </form>
+    </div>
+    
+    <div id="DiffChecker" class="tabcontent">
+      <style type="text/css">
+        table.diff {
+          border-collapse:collapse;
+          border:1px solid darkgray;
+          white-space:pre-wrap
+        }
+        table.diff tbody { 
+          font-family:Courier, monospace
+        }
+        table.diff tbody th {
+          font-family:verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+          background:#EED;
+          font-size:11px;
+          font-weight:normal;
+          border:1px solid #BBC;
+          color:#886;
+          padding:.3em .5em .1em 2em;
+          text-align:right;
+          vertical-align:top
+        }
+        table.diff thead {
+          border-bottom:1px solid #BBC;
+          background:#EFEFEF;
+          font-family:Verdana
+        }
+        table.diff thead th.texttitle {
+          text-align:left
+        }
+        table.diff tbody td {
+          padding:0px .4em;
+          padding-top:.4em;
+          vertical-align:top;
+        }
+        table.diff .empty {
+          background-color:#DDD;
+        }
+        table.diff .replace {
+          background-color:#FD8
+        }
+        table.diff .delete {
+          background-color:#E99;
+        }
+        table.diff .skip {
+          background-color:#EFEFEF;
+          border:1px solid #AAA;
+          border-right:1px solid #BBC;
+        }
+        table.diff .insert {
+          background-color:#9E9
+        }
+        table.diff th.author {
+          text-align:right;
+          border-top:1px solid #BBC;
+          background:#EFEFEF
+        } 
+      </style>
+      <div class="top">
+        <strong>Context size (optional):</strong> <input type="text" id="contextSize" value="" />
+      </div>
+      <div class="textInput">
+        <h2>Base Text</h2>
+        <textarea id="baseText"></textarea>
+      </div>
+      <div class="textInput spacer">
+        <h2>New Text</h2>
+        <textarea id="newText"></textarea>
+      </div>
+      <div class="viewType">
+        <input type="radio" name="_viewtype" id="sidebyside" onclick="diffUsingJS(0);" /> <label for="sidebyside">Side by Side Diff</label>
+        &nbsp; &nbsp;
+        <input type="radio" name="_viewtype" id="inline" onclick="diffUsingJS(1);" /> <label for="inline">Inline Diff</label>
+      </div>
+      <div id="diffoutput"> </div>
     </div>
 
 
@@ -511,6 +619,31 @@ document.getElementById("sortNone").addEventListener("click", function () {
    return false;
  };
 };
+
+/************************ Diff Checker ***************************/
+function diffUsingJS(viewType) {
+  "use strict";
+  var byId = function (id) { return document.getElementById(id); },
+    base = difflib.stringAsLines(byId("baseText").value),
+    newtxt = difflib.stringAsLines(byId("newText").value),
+    sm = new difflib.SequenceMatcher(base, newtxt),
+    opcodes = sm.get_opcodes(),
+    diffoutputdiv = byId("diffoutput"),
+    contextSize = byId("contextSize").value;
+
+  diffoutputdiv.innerHTML = "";
+  contextSize = contextSize || null;
+
+  diffoutputdiv.appendChild(diffCheckerView.buildView({
+    baseTextLines: base,
+    newTextLines: newtxt,
+    opcodes: opcodes,
+    baseTextName: "Base Text",
+    newTextName: "New Text",
+    contextSize: contextSize,
+    viewType: viewType
+  }));
+}
 </script>
 
 </body>
