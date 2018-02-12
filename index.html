@@ -104,6 +104,8 @@
     <button class="tablinks" onclick="openTab(event, 'Extracter')">Regex Extract/Replace</button>
     <button class="tablinks" onclick="openTab(event, 'DuplicateRemoval')">Duplicate Removal/Sorter</button>
     <button class="tablinks" onclick="openTab(event, 'DiffChecker')">Diff Checker</button>
+    <button class="tablinks" onclick="openTab(event, 'JsonXML')">JSON &lt;=&gt; XML</button>
+    <button class="tablinks" onclick="openTab(event, 'XMLTree')">XML Tree Generator</button>
   </div>
 
   <div id="Tester" class="tabcontent">
@@ -382,11 +384,71 @@
       </div>
       <div id="diffoutput"> </div>
     </div>
+    <div id="JsonXML" class="tabcontent">
+    <style type="text/css">
+        .inline-div {
+           display:inline-block;
+           width: 45%;
+        }
+    </style>
+      <div class="inline-div">
+        <h2 style="text-align: center;">XML</h2><button onclick="beautify('XML','xmlArea','XMLcount','XMLcustom_pattern')">Preety Print</button> Custom Pattern <input id="XMLcustom_pattern" type="text" size="2" value=""> COUNT : <input id="XMLcount" type="text" size="5" readonly="readonly"> || <input type="button" onclick="minify('XML','xmlArea','XMLpreservews')" value="Minify"> <input id="XMLpreservews" type="checkbox">   <span style="display:inline-block;width:7em; margin:0px;font-size:75%;"> Preserve Comments </span>
+
+          <textarea id="xmlArea" cols="55" rows="550" style="height: 600px"></textarea>
+        </div>
+        <div style="display:inline-block;width: 9%; text-align: center;vertical-align:middle; height: 600px;">
+            <button id="convertToJsonBtn">XML => JSON</button>
+            <br><br>
+            <button id="convertToXmlBtn">JSON <= XML</button>
+        </div>
+        <div class="inline-div">
+            <h2 style="text-align: center;">JSON</h2><button onclick="beautify('JSON','jsonArea','JSONcount','JSONcustom_pattern')">Preety Print</button> Custom Pattern <input id="JSONcustom_pattern" type="text" size="2" value="" > COUNT : <input id="JSONcount" type="text" size="5" readonly="readonly"> || <input type="button" onclick="minify('JSON','jsonArea','JSONpreservews')" value="Minify"> <input id="JSONpreservews" type="checkbox">   <span style="display:inline-block;width:7em; margin:0px;font-size:75%;"> Preserve Comments </span>
+
+            <textarea id="jsonArea" cols="55" rows="550" style="height: 600px"></textarea>
+        </div>
+    </div>
+    <div id="XMLTree" class="tabcontent">
+     <style type="text/css">
+        .inline-divXMLTree {
+           display:inline-block;
+           width: 49%;
+        }
+
+        #treeViewXMLTree li {
+            list-style: none;
+        }
+
+        #treeViewXMLTree ul {
+            padding-left: 1em;
+        }
+
+        #treeVtreeViewXMLTreeiew b {
+            padding-right: 1em;
+        }
+    
+    </style>
+      <div class="inline-divXMLTree">
+        <h2 style="text-align: center;">XML</h2><button onclick="beautify('XML','xmlAreaXMLTree','XMLcountXMLTree','XMLcustom_patternXMLTree')">Preety Print</button> Custom Pattern <input id="XMLcustom_patternXMLTree" type="text" size="2" value=""> COUNT : <input id="XMLcountXMLTree" type="text" size="5" readonly="readonly"> || <input type="button" onclick="minify('XML','xmlAreaXMLTree','XMLpreservewsXMLTree')" value="Minify"> <input id="XMLpreservewsXMLTree" type="checkbox">   <span style="display:inline-block;width:7em; margin:0px;font-size:75%;"> Preserve Comments </span>
+
+          <textarea id="xmlAreaXMLTree" cols="55" rows="550" style="height: 600px" onkeyup="GenerateXMLTree('xmlAreaXMLTree','treeViewXMLTree')"></textarea>
+        </div>
+        
+        <div class="inline-divXMLTree" style="vertical-align:top;">
+            <h2 style="text-align: center;"> XML Tree </h2>
+            <br ><br >
+            <ul id="treeViewXMLTree" style=" border: 1px solid black;padding: 5px;">
+                <li></li>
+            </ul>
+        </div>
+    </div>
 
 
     <script type="text/javascript" src="javascripts/xregexp.js"></script>
     <script type="text/javascript" src="javascripts/helpers.js"></script>
     <script type="text/javascript" src="javascripts/regexpal.js"></script>
+    <script type="text/javascript" src="javascripts/JQuery v1.3.2.js"></script>
+    <script type="text/javascript" src="javascripts/xml2json.js"></script>
+    <script type="text/javascript" src="javascripts/vkbeautify.js"></script>
 
 
     <script>
@@ -644,6 +706,52 @@ function diffUsingJS(viewType) {
     viewType: viewType
   }));
 }
+
+  /************************JSON to XML****************************/
+  var x2js = new X2JS();
+
+function convertXml2JSon() {
+    $("#jsonArea").val(JSON.stringify(x2js.xml_str2json($("#xmlArea").val())));
+}
+
+function convertJSon2XML() {
+    $("#xmlArea").val(x2js.json2xml_str($.parseJSON($("#jsonArea").val())));
+}
+
+$("#xmlArea").val("<root><child><textNode>First &amp; Child</textNode></child><child><textNode>Second Child</textNode></child><testAttrs attr1='attr1Value'/></root>");
+
+convertXml2JSon();
+convertJSon2XML();
+$("#convertToJsonBtn").click(convertXml2JSon);
+$("#convertToXmlBtn").click(convertJSon2XML);
+
+/**************************** XML Tree **********************************/
+function GenerateXMLTree(source,target){
+         $("#"+target).html('<li></li>');
+         var tree = $.parseXML($("#"+source).val()); traverse($('#'+target+' li'), tree.firstChild)
+         // this – is an —
+         $('<b>–<\/b>').prependTo('#'+target+' li:has(li)').click(function() {
+             var sign = $(this).text()
+             if (sign == "–")
+                 $(this).text('+').next().children().hide()
+             else
+                 $(this).text('–').next().children().show()
+         });
+     }
+
+ function traverse(node, tree) {
+     var children = $(tree).children()
+     node.append(tree.nodeName)
+     if (children.length) {
+         var ul = $("<ul>").appendTo(node)
+         children.each(function() {
+             var li = $('<li>').appendTo(ul)
+             traverse(li, this)
+         })
+     } else {
+         $('<ul><li>' + $(tree).text() + '<\/li><\/ul>').appendTo(node)
+     }
+ }
 </script>
 
 </body>
