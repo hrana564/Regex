@@ -399,7 +399,7 @@
         <div style="display:inline-block;width: 9%; text-align: center;vertical-align:middle; height: 600px;">
             <button id="convertToJsonBtn">XML => JSON</button>
             <br><br>
-            <button id="convertToXmlBtn">JSON <= XML</button>
+            <button id="convertToXmlBtn">XML <= JSON</button>
         </div>
         <div class="inline-div">
             <h2 style="text-align: center;">JSON</h2><button onclick="beautify('JSON','jsonArea','JSONcount','JSONcustom_pattern')">Preety Print</button> Custom Pattern <input id="JSONcustom_pattern" type="text" size="2" value="" > COUNT : <input id="JSONcount" type="text" size="5" readonly="readonly"> || <input type="button" onclick="minify('JSON','jsonArea','JSONpreservews')" value="Minify"> <input id="JSONpreservews" type="checkbox">   <span style="display:inline-block;width:7em; margin:0px;font-size:75%;"> Preserve Comments </span>
@@ -447,6 +447,9 @@
     <script type="text/javascript" src="javascripts/helpers.js"></script>
     <script type="text/javascript" src="javascripts/regexpal.js"></script>
     <script type="text/javascript" src="javascripts/JQuery v1.3.2.js"></script>
+    <script type="text/javascript">
+      var myJqueryAlias = jQuery.noConflict();
+    </script>
     <script type="text/javascript" src="javascripts/xml2json.js"></script>
     <script type="text/javascript" src="javascripts/vkbeautify.js"></script>
  
@@ -711,45 +714,45 @@ function diffUsingJS(viewType) {
   var x2js = new X2JS();
 
 function convertXml2JSon() {
-    $("#jsonArea").val(JSON.stringify(x2js.xml_str2json($("#xmlArea").val())));
+    myJqueryAlias("#jsonArea").val(JSON.stringify(x2js.xml_str2json(myJqueryAlias("#xmlArea").val())));
 }
 
 function convertJSon2XML() {
-    $("#xmlArea").val(x2js.json2xml_str($.parseJSON($("#jsonArea").val())));
+    myJqueryAlias("#xmlArea").val(x2js.json2xml_str(myJqueryAlias.parseJSON(myJqueryAlias("#jsonArea").val())));
 }
 
-$("#xmlArea").val("<root><child><textNode>First &amp; Child</textNode></child><child><textNode>Second Child</textNode></child><testAttrs attr1='attr1Value'/></root>");
+myJqueryAlias("#xmlArea").val("<root><child><textNode>First &amp; Child</textNode></child><child><textNode>Second Child</textNode></child><testAttrs attr1='attr1Value'/></root>");
 
 convertXml2JSon();
 convertJSon2XML();
-$("#convertToJsonBtn").click(convertXml2JSon);
-$("#convertToXmlBtn").click(convertJSon2XML);
+myJqueryAlias("#convertToJsonBtn").click(convertXml2JSon);
+myJqueryAlias("#convertToXmlBtn").click(convertJSon2XML);
 
 /**************************** XML Tree **********************************/
 function GenerateXMLTree(source,target){
-         $("#"+target).html('<li></li>');
-         var tree = $.parseXML($("#"+source).val()); traverse($('#'+target+' li'), tree.firstChild)
+         myJqueryAlias("#"+target).html('<li></li>');
+         var tree = myJqueryAlias.parseXML(myJqueryAlias("#"+source).val()); traverse(myJqueryAlias('#'+target+' li'), tree.firstChild)
          // this – is an —
-         $('<b>–<\/b>').prependTo('#'+target+' li:has(li)').click(function() {
-             var sign = $(this).text()
+         myJqueryAlias('<b>–<\/b>').prependTo('#'+target+' li:has(li)').click(function() {
+             var sign = myJqueryAlias(this).text()
              if (sign == "–")
-                 $(this).text('+').next().children().hide()
+                 myJqueryAlias(this).text('+').next().children().hide()
              else
-                 $(this).text('–').next().children().show()
+                 myJqueryAlias(this).text('–').next().children().show()
          });
      }
 
  function traverse(node, tree) {
-     var children = $(tree).children()
+     var children = myJqueryAlias(tree).children()
      node.append(tree.nodeName)
      if (children.length) {
-         var ul = $("<ul>").appendTo(node)
+         var ul = myJqueryAlias("<ul>").appendTo(node)
          children.each(function() {
-             var li = $('<li>').appendTo(ul)
+             var li = myJqueryAlias('<li>').appendTo(ul)
              traverse(li, this)
          })
      } else {
-         $('<ul><li>' + $(tree).text() + '<\/li><\/ul>').appendTo(node)
+         myJqueryAlias('<ul><li>' + myJqueryAlias(tree).text() + '<\/li><\/ul>').appendTo(node)
      }
  }
 </script>
